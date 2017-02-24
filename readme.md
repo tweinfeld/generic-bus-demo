@@ -2,7 +2,7 @@
 
 This is a sample project demonstrating a method to collect events from different sources, and process them in a centric fashion.
 
-_This example employs a "Function Reactive Programming" library named "[Kefir](https://rpominov.github.io/kefir/)". Notice that Kefir (or any other alternative FRP lib) reflects an implementation choice rather than a substaincial architecture decision. All units' interfaces are library-agnostic._
+_This example employs a "Function Reactive Programming" library named "[Kefir](https://rpominov.github.io/kefir/)". Notice that Kefir (or any other alternative FRP lib) reflects an implementation choice rather than a substantial architecture decision. All units' interfaces are library-agnostic._
 
 This project supports two different source types:
 
