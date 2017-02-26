@@ -3,7 +3,8 @@ const
     kefir = require('kefir'),
     RandomUserSessionSource = require('./source/random_user_session'),
     WebhookSource = require('./source/webhook'),
-    CounterAnalyzer = require('./analyze/counter');
+    CounterAnalyzer = require('./analyze/counter'),
+    RedisOutput = require('./output/redis');
 
 // Create a stream that hooks into the "event" and "error" events. Map errors to Kefir errors.
 const createEventErrorStream = function(instance){
@@ -27,7 +28,12 @@ bus.plug(randomUserSessionStream);
 bus.plug(webhookSourceStream);
 
 // Send relevant messages to the "Counter" analyzer
-let roster = new CounterAnalyzer();
+let couterAnalyzer = new CounterAnalyzer();
 bus
     .filter(({ type })=> _.includes(["user_log_in", "user_log_out"], type))         // Filter messages where the "type" field is one of two
-    .onValue(roster.send);                                                          // Send the message to be handled by the analyzer
+    .onValue(couterAnalyzer.send);                                                          // Send the message to be handled by the analyzer
+
+let redisOutput = new RedisOutput({ host: "192.168.99.100" });
+bus
+    .map(JSON.stringify)
+    .onValue((message)=> redisOutput.send(message));
