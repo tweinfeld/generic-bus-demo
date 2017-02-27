@@ -29,15 +29,24 @@ bus.plug(randomUserSessionStream);
 bus.plug(webhookSourceStream);
 
 // Send relevant messages to the "Counter" analyzer
-let couterAnalyzer = new CounterAnalyzer();
+let counterAnalyzer = new CounterAnalyzer();
 bus
-    .filter(({ type })=> _.includes(["user_log_in", "user_log_out"], type))                 // Filter messages where the "type" field is one of two
-    .onValue(couterAnalyzer.send);                                                          // Send the message to be handled by the analyzer
+    .filter(({ type })=> _.includes(["user_log_in", "user_log_out"], type))                  // Filter messages where the "type" field is one of two
+    .onValue(counterAnalyzer.send);                                                          // Send the message to be handled by the analyzer
 
-// Send all message to Redis
-let redisOutput = new RedisOutput({ host: "192.168.99.100" });
-bus.onValue((message)=> redisOutput.send(message));
+// Send messages with { channel: client } to a Redis list
+let redisOutput = new RedisOutput({
+    keyName: "logs",
+    host: "192.168.99.100"
+});
 
-// Send all message to spanning log files
-let fileOutput = new FileOutput({ fileRollLimit: 5 });
+bus
+    .filter(({ channel })=> channel === "client")
+    .onValue((message)=> redisOutput.send(message));
+
+// Send all messages to spanning log files
+let fileOutput = new FileOutput({
+    fileRollLimit: 5
+});
+
 bus.onValue(fileOutput.send);
