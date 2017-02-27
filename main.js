@@ -4,7 +4,8 @@ const
     RandomUserSessionSource = require('./source/random_user_session'),
     WebhookSource = require('./source/webhook'),
     CounterAnalyzer = require('./analyze/counter'),
-    RedisOutput = require('./output/redis');
+    RedisOutput = require('./output/redis'),
+    FileOutput = require('./output/file');
 
 // Create a stream that hooks into the "event" and "error" events. Map errors to Kefir errors.
 const createEventErrorStream = function(instance){
@@ -30,10 +31,13 @@ bus.plug(webhookSourceStream);
 // Send relevant messages to the "Counter" analyzer
 let couterAnalyzer = new CounterAnalyzer();
 bus
-    .filter(({ type })=> _.includes(["user_log_in", "user_log_out"], type))         // Filter messages where the "type" field is one of two
+    .filter(({ type })=> _.includes(["user_log_in", "user_log_out"], type))                 // Filter messages where the "type" field is one of two
     .onValue(couterAnalyzer.send);                                                          // Send the message to be handled by the analyzer
 
+// Send all message to Redis
 let redisOutput = new RedisOutput({ host: "192.168.99.100" });
-bus
-    .map(JSON.stringify)
-    .onValue((message)=> redisOutput.send(message));
+bus.onValue((message)=> redisOutput.send(message));
+
+// Send all message to spanning log files
+let fileOutput = new FileOutput({ fileRollLimit: 5 });
+bus.onValue(fileOutput.send);
