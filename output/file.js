@@ -6,7 +6,7 @@ const
 
 const
     KILOBYTE = 1024,
-    DEFAULT_FILE_SIZE = 5 * KILOBYTE,
+    DEFAULT_FILE_SIZE = 50 * KILOBYTE,
     DEFAULT_FILE_ROLL_LIMIT = 3,
     DEFAULT_FILE_PATH = path.join(process.cwd(), 'data'),
     DEFAULT_FILE_NAME_TEMPLATE = (serial)=> `demo_${_.padStart(serial + 1, 3, '0')}.log`;
