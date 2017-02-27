@@ -30,7 +30,7 @@ module.exports = class {
     }
 
     send(message){
-        this[REDIS_CLIENT].lpush(this[REDIS_KEY_NAME], message);
+        this[REDIS_CLIENT].lpush(this[REDIS_KEY_NAME], JSON.stringify(message));
     }
 
 };
