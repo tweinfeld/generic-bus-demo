@@ -5,7 +5,7 @@ const
     kefir = require('kefir');
 
 const
-    KILOBYTE = 1000,
+    KILOBYTE = 1024,
     DEFAULT_FILE_SIZE = 5 * KILOBYTE,
     DEFAULT_FILE_ROLL_LIMIT = 3,
     DEFAULT_FILE_PATH = path.join(process.cwd(), 'data'),
@@ -21,7 +21,7 @@ module.exports = class {
     } = {}){
 
         let messageStream = kefir
-            .stream(({ emit })=> this.send = emit )
+            .stream(({ emit })=> this.send = emit)
             .map(JSON.stringify)
             .map((message)=> Buffer.from(message + '\n', 'utf8'));
 
